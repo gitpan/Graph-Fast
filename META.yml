@@ -13,7 +13,7 @@ name: Graph-Fast
 provides:
   Graph::Fast:
     file: lib/Graph/Fast.pm
-    version: 0.011
+    version: 0.02
   Graph::Fast::GraphPM:
     file: lib/Graph/Fast/GraphPM.pm
   Graph::Fast_LPQ::GraphPM:
@@ -25,4 +25,4 @@ requires:
   perl: v5.10.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.011
+version: 0.02

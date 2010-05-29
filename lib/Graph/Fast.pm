@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.010;
 
-our $VERSION = "0.011";
+our $VERSION = "0.02";
 
 use Data::Dumper;
 use Storable qw(dclone);
@@ -39,6 +39,21 @@ sub add_vertex {
 		$self->{vertices}->{$name} = { name => $name, edges_in => {}, edges_out => {} };
 	}
 	return $self->{vertices}->{$name};
+}
+
+sub del_vertex {
+	my ($self, $name) = @_;
+
+	if (exists($self->{vertices}->{$name})) {
+		@{$self->{edges}} = grep { $_->{from} ne $name and $_->{to} ne $name } @{$self->{edges}};
+		foreach my $in_edge (keys %{$self->{vertices}->{$name}->{edges_in}}) {
+			delete($self->{vertices}->{$in_edge}->{edges_out}->{$name});
+		}
+		foreach my $out_edge (keys %{$self->{vertices}->{$name}->{edges_out}}) {
+			delete($self->{vertices}->{$out_edge}->{edges_in}->{$name});
+		}
+		delete($self->{vertices}->{$name});
+	}
 }
 
 sub dijkstra_worker {
@@ -218,6 +233,12 @@ Returns the number of vertices in the graph.
 
 Adds a vertex with the specified name to the graph. Names must be unique.
 It is safe to call this with a name that already exists in the graph.
+
+=head2 B<del_vertex>(I<$name>)
+
+Deletes a vertex with the specified name from the graph. All edges that
+go from or to the specified edges will be deleted as well. It is safe to
+call this with a name that doesn't exist.
 
 =head2 B<add_edge>(I<$from> => I<$to>, I<$weight>, I<$user_data>)
 
